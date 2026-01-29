@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HelpDesk Info - Diagnostic PC Professionnel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
+</head>
+<body>
+
+<div class="container py-5">
+  <div class="card shadow-lg rounded-4 main-card">
+    <div class="card-header text-white text-center main-header">
+      <h3 class="mb-0">
+        <i class="bi bi-pc-display-horizontal header-icon"></i>
+        HelpDesk Info – Diagnostic PC Professionnel
+      </h3>
+    </div>
+    <div class="card-body p-4">
+
+      <!-- Navigation par onglets -->
+      <ul class="nav nav-tabs mb-4" id="infoTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="sys-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
+            <i class="bi bi-info-circle"></i>
+            Infos Système
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="prog-tab" data-bs-toggle="tab" data-bs-target="#programs" type="button" role="tab">
+            <i class="bi bi-app-indicator"></i>
+            Programmes
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="serv-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab">
+            <i class="bi bi-gear"></i>
+            Services
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="proc-tab" data-bs-toggle="tab" data-bs-target="#processes" type="button" role="tab">
+            <i class="bi bi-cpu"></i>
+            Processus
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Onglet 1 : Infos Système -->
+        <div class="tab-pane fade show active" id="system" role="tabpanel">
+          <div class="row g-3">
+            {% for key, value in info.items() if not value is iterable or value is string %}
+              <div class="col-md-4">
+                <label class="form-label">{{ key.replace('_', ' ').title() }}</label>
+                <input type="text" class="form-control" value="{{ value }}" readonly>
+              </div>
+            {% endfor %}
+          </div>
+
+          <hr class="my-4">
+          <!-- Formulaire de signalement de problème -->
+          <form method="POST">
+            <label class="form-label">
+              <i class="bi bi-chat-left-text"></i>
+              Décrivez votre problème
+            </label>
+            <textarea name="problem" class="form-control mb-3" rows="4" placeholder="Décrivez en détail le problème rencontré...">{{ problem }}</textarea>
+            <div class="d-flex justify-content-end gap-2">
+              <a href="/export" class="btn btn-outline-secondary">
+                <i class="bi bi-download"></i>
+                Exporter le rapport
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i>
+                Envoyer le rapport
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Onglet 2 : Programmes installés -->
+        <div class="tab-pane fade" id="programs" role="tabpanel">
+          <div class="alert alert-info alert-custom mb-3">
+            <i class="bi bi-info-circle"></i>
+            <strong>Programmes installés</strong> - Liste complète des applications présentes sur le système
+          </div>
+          <table id="programsTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th><i class="bi bi-app"></i> Nom du programme</th>
+                <th><i class="bi bi-calendar-event"></i> Date d'installation</th>
+                <th><i class="bi bi-gear"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Onglet 3 : Services Windows -->
+        <div class="tab-pane fade" id="services" role="tabpanel">
+          <div class="alert alert-warning alert-custom mb-3">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Services Windows</strong> - Gestion des services système (privilèges administrateur requis)
+          </div>
+          <table id="servicesTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th><i class="bi bi-tag"></i> Nom du service</th>
+                <th><i class="bi bi-card-text"></i> Nom affiché</th>
+                <th><i class="bi bi-activity"></i> Statut</th>
+                <th><i class="bi bi-sliders"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Onglet 4 : Processus en cours -->
+        <div class="tab-pane fade" id="processes" role="tabpanel">
+          <div class="alert alert-danger alert-custom mb-3">
+            <i class="bi bi-shield-exclamation"></i>
+            <strong>Processus système</strong> - Terminer un processus peut entraîner une perte de données ou une instabilité
+          </div>
+          <table id="processesTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th><i class="bi bi-hash"></i> PID</th>
+                <th><i class="bi bi-window"></i> Nom du processus</th>
+                <th><i class="bi bi-speedometer"></i> CPU %</th>
+                <th><i class="bi bi-memory"></i> Mémoire</th>
+                <th><i class="bi bi-x-circle"></i> Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+      </div> <!-- fin tab-content -->
+
+    </div>
+  </div>
+</div>
+
+<!-- Scripts Bootstrap, jQuery et DataTables -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+// Système de notifications toast personnalisé
+function showToast(message, type = 'info') {
+  const toastContainer = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  const icons = {
+    success: 'bi-check-circle-fill',
+    error: 'bi-x-circle-fill',
+    warning: 'bi-exclamation-triangle-fill',
+    info: 'bi-info-circle-fill'
+  };
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#06b6d4'
+  };
+
+  toast.className = 'toast show';
+  toast.style.cssText = `
+    position: relative;
+    background: white;
+    border-left: 4px solid ${colors[type]};
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    animation: slideInRight 0.3s ease-out;
+  `;
+  toast.innerHTML = `
+    <div class="toast-body d-flex align-items-center gap-2">
+      <i class="bi ${icons[type]}" style="color: ${colors[type]}; font-size: 1.25rem;"></i>
+      <span>${message}</span>
+    </div>
+  `;
+
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease-out';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+// Initialisation du container de toasts
+document.addEventListener('DOMContentLoaded', function() {
+  if (!document.getElementById('toastContainer')) {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    document.body.appendChild(container);
+  }
+});
+
+// Chargement de tables avec DataTables et indicateur de chargement
+function loadTable(url, tableId, columns, columnDefs) {
+  const tableElement = $(tableId);
+  tableElement.html('<tr><td colspan="100%" class="text-center"><div class="loading-spinner"></div> Chargement des données...</td></tr>');
+
+  $.getJSON(url, function(data) {
+    const table = tableElement.DataTable({
+      destroy: true,
+      data: data,
+      columns: columns,
+      columnDefs: columnDefs || [],
+      language: {
+        lengthMenu: "Afficher _MENU_ entrées",
+        search: "Rechercher :",
+        info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+        infoEmpty: "Aucune entrée disponible",
+        infoFiltered: "(filtré de _MAX_ entrées au total)",
+        paginate: {
+          first: "Premier",
+          last: "Dernier",
+          next: "Suivant",
+          previous: "Précédent"
+        },
+        emptyTable: "Aucune donnée disponible",
+        zeroRecords: "Aucun résultat trouvé"
+      }
+    });
+  }).fail(function() {
+    showToast('Erreur lors du chargement des données', 'error');
+  });
+}
+
+// Désinstallation de programme avec confirmation
+function uninstallProgram(name) {
+  if (!confirm(`Voulez-vous vraiment désinstaller "${name}" ?\n\nCette action peut prendre plusieurs minutes.`)) {
+    return;
+  }
+
+  showToast(`Désinstallation de "${name}" en cours...`, 'info');
+
+  fetch('/uninstall_program', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, 'success');
+      setTimeout(() => $('#prog-tab').click(), 2000);
+    } else {
+      showToast(data.message, 'error');
+    }
+  })
+  .catch(err => {
+    showToast('Erreur lors de la désinstallation', 'error');
+  });
+}
+
+// Actions sur services avec feedback
+function serviceAction(name, action) {
+  const actionLabels = {
+    start: 'démarrage',
+    stop: 'arrêt',
+    restart: 'redémarrage'
+  };
+
+  showToast(`${actionLabels[action]} du service "${name}" en cours...`, 'info');
+
+  fetch('/service_action', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, action })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, 'success');
+      setTimeout(() => $('#serv-tab').click(), 1500);
+    } else {
+      showToast(data.message, 'error');
+    }
+  })
+  .catch(err => {
+    showToast('Erreur lors de l\'action sur le service', 'error');
+  });
+}
+
+// Terminer un processus avec confirmation
+function killProcess(pid, name) {
+  if (!confirm(`Voulez-vous vraiment terminer le processus "${name}" (PID: ${pid}) ?\n\nCela peut causer une perte de données non sauvegardées.`)) {
+    return;
+  }
+
+  showToast(`Arrêt du processus ${pid} en cours...`, 'info');
+
+  fetch('/kill_process', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pid })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, 'success');
+      setTimeout(() => $('#proc-tab').click(), 1500);
+    } else {
+      showToast(data.message, 'error');
+    }
+  })
+  .catch(err => {
+    showToast('Erreur lors de l\'arrêt du processus', 'error');
+  });
+}
+
+// Chargement de l'onglet Programmes
+$('#prog-tab').on('shown.bs.tab', () => {
+  loadTable('/programs', '#programsTable', [
+    { data: 'name' },
+    { data: 'install_date' },
+    {
+      data: null,
+      render: function(data, type, row) {
+        const safeName = row.name.replace(/'/g, "\\'");
+        return `<button class="btn btn-sm btn-danger" onclick="uninstallProgram('${safeName}')">
+          <i class="bi bi-trash"></i> Désinstaller
+        </button>`;
+      }
+    }
+  ]);
+});
+
+// Chargement de l'onglet Services
+$('#serv-tab').on('shown.bs.tab', () => {
+  loadTable('/services', '#servicesTable', [
+    { data: 'name' },
+    { data: 'display_name' },
+    {
+      data: 'status',
+      render: function(data) {
+        const isRunning = data === 'Running';
+        return `<span class="badge ${isRunning ? 'status-running' : 'status-stopped'}">
+          <i class="bi ${isRunning ? 'bi-play-circle' : 'bi-stop-circle'}"></i> ${data}
+        </span>`;
+      }
+    },
+    {
+      data: null,
+      render: function(data, type, row) {
+        const safeName = row.name.replace(/'/g, "\\'");
+        return `
+          <button class="btn btn-sm btn-success me-1" onclick="serviceAction('${safeName}','start')" title="Démarrer">
+            <i class="bi bi-play-fill"></i>
+          </button>
+          <button class="btn btn-sm btn-warning me-1" onclick="serviceAction('${safeName}','stop')" title="Arrêter">
+            <i class="bi bi-stop-fill"></i>
+          </button>
+          <button class="btn btn-sm btn-info" onclick="serviceAction('${safeName}','restart')" title="Redémarrer">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        `;
+      }
+    }
+  ]);
+});
+
+// Chargement de l'onglet Processus
+$('#proc-tab').on('shown.bs.tab', () => {
+  loadTable('/processes', '#processesTable', [
+    { data: 'pid' },
+    { data: 'name' },
+    {
+      data: 'cpu_percent',
+      render: function(data) {
+        const percentage = parseFloat(data) || 0;
+        let colorClass = 'text-success';
+        if (percentage > 50) colorClass = 'text-warning';
+        if (percentage > 80) colorClass = 'text-danger';
+        return `<span class="${colorClass} fw-bold">${percentage.toFixed(1)}%</span>`;
+      }
+    },
+    { data: 'memory' },
+    {
+      data: null,
+      render: function(data, type, row) {
+        const safeName = row.name.replace(/'/g, "\\'");
+        return `<button class="btn btn-sm btn-danger" onclick="killProcess(${row.pid}, '${safeName}')" title="Terminer le processus">
+          <i class="bi bi-x-circle"></i> Tuer
+        </button>`;
+      }
+    }
+  ]);
+});
+</script>
+
+</body>
+</html>

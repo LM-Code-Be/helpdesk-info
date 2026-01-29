@@ -1,0 +1,86 @@
+# ============================================
+# .gitignore - HelpDesk Info
+# Développé par Michael - LM-Code
+# ============================================
+
+# Environnements virtuels Python
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Build et Distribution
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+*.whl
+
+# PyInstaller
+main.spec
+*.manifest
+
+# Logs et fichiers temporaires
+*.log
+helpdesk.log
+rapport_*.txt
+*.tmp
+*.bak
+*.cache
+*.swp
+*.swo
+
+# Base de données
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration et secrets
+.env
+.env.local
+config.local.py
+*.key
+*.pem
+
+# IDEs et éditeurs
+.vscode/
+.idea/
+*.sublime-*
+.vs/
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# Tests et couverture
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Documentation générée
+docs/_build/
+site/
+
+# Fichiers de sauvegarde
+*.backup
+*~
+
+# Node modules (si ajout de npm plus tard)
+node_modules/
+
+# Fichiers de développement
+*.test.py
+test_*.py
+debug.py
